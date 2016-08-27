@@ -11,7 +11,7 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      type: {
+      trainingType: {
         type: Sequelize.STRING
       },
       location: {
@@ -28,6 +28,6 @@ module.exports = {
     });
   },
   down: function(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Training');
+    return queryInterface.dropTable('Trainings');
   }
 };
