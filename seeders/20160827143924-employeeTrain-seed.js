@@ -7,7 +7,6 @@ module.exports = {
     ], {});
   },
 
-
   down: function (queryInterface, Sequelize) {
      return queryInterface.bulkDelete('EmployeeTraining', null, {});
   }

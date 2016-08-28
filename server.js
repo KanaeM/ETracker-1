@@ -1,132 +1,89 @@
-var express = require ('express');
+var express = require('express');
 var bodyParser = require('body-parser');
-var bcrypt = require('bcrypt-nodejs');
+var cookieParser = require('cookie-parser');
+var exphbs = require('express-handlebars');
 var passport = require('passport');
+var session = require('express-session');
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var LocalStrategy = require('passport-local').Strategy;
+
+var routes = require('./controllers/routes_controller.js');
+
+var db = require('./models/index.js').sequelize;
+// var Employee = require('./models').employee;
+// db.sync();
+
 var models = require('./models');
-var expresshb = require('express-handlebars');
-var methodOver = require('method-override');
-
-var app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.text());
-app.use(express.static(__dirname + '/public'));
-app.use(methodOver('_method'));
-app.engine('handlebars', expresshb({
-	defaultLayout: 'main'
-}));
-app.set('view engine', 'handlebars');
-
-var sequelizeConnection = models.sequelize
+var sequelizeConnection = models.sequelize;
 sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 .then(function(){
 	return sequelizeConnection.sync({force:false})
 })
 
+var app = express();
 
+app.use(express.static(process.cwd() + '/public'));
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-//CREATE A NEW USER FOR THE SITE
-// app.post('/create', function(req, res){
-// 	return models.Employee.create({
-// 		name: req.body.name,
-// 		dob req.body.dob,
-//		type: req.body.type,
-// 		completed: false
-// 	})
-// 	.then(function(newEmployee){
-// 		return models.Department.findOne({where: {name:req.body.depName}})
-// 		.then(function(employee){
-// 			return employee.addEmployee(newEmployee)
-// 		})
-//	res.redirect('/');
-// 	})
-//
-// })
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge : 300000 },	// 5 minutes
+  store: new SequelizeStore({
+	db: db
+  }),
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
+passport.use('local', new LocalStrategy(function(username, password, done) {
+	models.Employee.findOne({where:{username: username}}).then(function(employee) {
+		if(!employee){
+			return done(null, false);
+		}
+		var realPass = employee.password;
+		if (!employee.username){
+			return done(null, false);
+		}
+		if (password !== realPass){
+			return done(null, false);
+		}
 
-//GET ALL EMPLOYEES FROM ALL DEPARTMENTS
-// app.get('/', function(req, res){
-	// var employeeData = [];
-	// models.Employee.findAll()
-	// 	.then(function(allEmp){
-	// 		for (var i = 0; i < allEmp.length; i++){
-	// 			console.log(allEmp[i].name, allEmp[i].dob)
-	// 			employeeData.push({
-	// 				name:allEmp[i].name, 
-	// 				dob:allEmp[i].dob,
-	// 				department: allEmp[i].DepartmentId
-	// 				})
+		return done(null, employee);
+	}).catch(function(err){
+		throw err;
+	});
+}));
 
-	// 			}
+passport.serializeUser(function(employee, cb) {
+  cb(null, employee.id);
+});
 
-	// 		console.log(employeeData)
-	// 	})
+passport.deserializeUser(function(id, cb) {
+  models.Employee.findOne( {where: {id: id} }).then(function(employee) {
+	cb(null, employee);
+  }).catch(function(err) {
+	if (err) {
+	  return cb(err);
+	}
+  });
+});
 
-	// res.render('index', employeeData)
-// })
+app.use('/', routes);
 
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+	var err = new Error('Not Found');
+	err.status = 404;
+	next(err);
+});
 
-//GET EMPLOYEE TRAININGS
-// models.Employee.findOne({where: {name: "David Bermudez"}})
-// .then (function(emptraining){
-// 	return emptraining.getTrainings()
-// 	.then (function (training){
-// 		console.log(training)
-// 	})
-// })
-
-
-// models.Training.findOne({where: {name: "Finance Training"}})
-// .then (function(finTraining){
-// 	return finTraining.getEmployees()
-// 	.then (function (train){
-// 		console.log(train)
-// 	})
-// })
-
-//PENDING TRAINING
-
-
-
-// //GET EMPLOYEE DEPARTMENT THROUGH TRAININGS
-// models.Training.findOne({where: {name: "Finance Training"}})
-// .then (function(finTraining){
-// 	return finTraining.getEmployees()
-// 	.then (function (train){
-// 		return train[0].DepartmentId
-// 	})
-// })
-// .then (function(result){
-// 	console.log("this is the result", result)
-// 	models.Employee.findOne({where: {DepartmentId: result}})
-// 	.then(function(dep){
-// 		return dep.getDepartment()
-// 		.then(function(final){
-// 			console.log(final)
-// 		})
-// 	})
-// 	})
-	
-// //
-// //GET EMPLOYEES FROM A SPECIFIC DEPARTMENT
-// models.Employee.findOne({where: { DepartmentId: 1}})
-// 	.then(function(data){
-// 		return data.getDepartment()
-// 		.then(function(res){
-// 			console.log(res)
-// 		})
-// 	})
-
-//To create users 
-
-
-//To get all users from 
-
-
-
-
-var PORT = 3000;
+var PORT = 7070;
 app.listen(process.env.PORT || PORT, function(){
 	console.log('Connected and listening on', PORT)
 })

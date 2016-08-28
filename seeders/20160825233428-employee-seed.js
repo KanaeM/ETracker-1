@@ -6,8 +6,8 @@ module.exports = {
       {id:1, name:"David Bermudez", username:"davidb1990", accountType: "Admin", dob: "1990-09-09", completed:0, password: "hello", DepartmentId:1, createdAt: new Date(), updatedAt: new Date()},
       {id:2, name: 'Elsa Matsui', username:"elsaj1987", accountType: "User", dob: "1987-07-12", completed:false, password: "kryptonite", DepartmentId:4, createdAt: new Date(), updatedAt: new Date()},
       {id:3, name: 'Gary Jackson', username:"garyj1996", accountType: "User", dob: "1966-01-15", completed:false, password: "goodbye", DepartmentId:1, createdAt: new Date(), updatedAt: new Date()},
-      {id:4, name: 'Brian Yaringano', username:"briany1996", accountType: "User", dob: "1996-05-30", completed:false, password: "password", DepartmentId:2, createdAt: new Date(), updatedAt: new Date()},
-      {id:5, name: 'Robin Van Persie', username:"robinvanp1975", accountType: "Admin", dob: "1975-01-03", completed:false, password: "delete", DepartmentId:5, createdAt: new Date(), updatedAt: new Date()},
+      {id:4, name: 'Brian Yaringano', username:"alex", accountType: "User", dob: "1996-05-30", completed:false, password: "alex", DepartmentId:2, createdAt: new Date(), updatedAt: new Date()},
+      {id:5, name: 'Robin Van Persie', username:"robin", accountType: "Admin", dob: "1975-01-03", completed:false, password: "robin", DepartmentId:5, createdAt: new Date(), updatedAt: new Date()},
     ], {});
   },
 

@@ -5,13 +5,14 @@ module.exports = function(sequelize, DataTypes) {
     username: DataTypes.STRING,
     password: DataTypes.STRING, 
     dob: DataTypes.DATE,
-    accountType: DataTypes, STRING,
+    accountType: DataTypes.STRING,
     completed: DataTypes.BOOLEAN
   }, {
     classMethods: {
       associate: function(models) {
-        // associations can be defined here
+        // O : M
         Employee.belongsTo(models.Department);
+        // M : M
         Employee.belongsToMany(models.Training, {through: "EmployeeTraining"})
       }
     }

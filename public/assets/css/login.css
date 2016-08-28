@@ -5,7 +5,7 @@
 }
 
 html {
-  background: url('../images/login.jpg') no-repeat center fixed;
+  background: url('/assets/img/login.jpg') no-repeat center fixed;
   background-size: cover;
 }
 
