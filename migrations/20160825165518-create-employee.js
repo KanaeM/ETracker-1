@@ -23,9 +23,9 @@ module.exports = {
       accountType: {
         type: Sequelize.STRING
       },
-      completed: {
-        type: Sequelize.BOOLEAN
-      },
+      // completed: {
+      //   type: Sequelize.BOOLEAN
+      // },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

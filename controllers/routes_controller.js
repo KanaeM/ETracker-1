@@ -125,5 +125,50 @@ router.get('/api/training/:name/employee', authorized, function(req, res) {
 			res.render('apiinfo', {data : employees})
 		});
 });
+// Save training
+router.post('/api/training', authorized, function(req, res) {
+	console.log(chalk.black.bgYellow('POST /api/training/'));
+	models.Training.create({
+		name: req.body.trainingName,
+		trainingType: req.body.trainingType,
+		location: req.body.location
+	}).then(function(training) {
+		console.log('training', training);
+		res.redirect('/api');
+	})
+})
+// Assign training to department and its employees
+router.post('/api/training/department', authorized, function(req, res) {
+	console.log(chalk.black.bgYellow('POST /api/training/department'));
+	models.Training.findOne({where: { id : req.body.trainingId } })
+		.then(function(training) {
+			models.Department.findOne({where: { id : req.body.departmentId } })
+				.then(function(department) {
+					department.addTraining([training]);
+					return department.getEmployees();
+				})
+				.then(function(employees) {
+					employees.forEach(function(employee){
+						employee.addTraining([training])
+					})
+					console.log(employees);
+					res.redirect('/api');
+				})
+		})
+})
+// Assign training to individual employee
+router.post('/api/training/employee', authorized, function(req, res) {
+	console.log(chalk.black.bgYellow('POST /api/training/employee'));
+	models.Employee.findOne({where: { id : req.body.employeeId } })
+		.then(function(employee) {
+			models.Training.findOne({where: { id : req.body.trainingId } })
+				.then(function(training) {
+					employee.addTraining([training]);
+					console.log(training);
+					res.redirect('/api');
+				})
+		})
+})
+
 
 module.exports = router;

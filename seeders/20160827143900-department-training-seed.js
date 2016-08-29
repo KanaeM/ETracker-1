@@ -3,7 +3,7 @@
 module.exports = {
   up: function (queryInterface, Sequelize) {
    return queryInterface.bulkInsert('DepartmentTraining', [
-      {DepartmentId: 1, TrainingId:1, createdAt: new Date(), updatedAt: new Date()},
+      {DepartmentId: 2, TrainingId:1, createdAt: new Date(), updatedAt: new Date()},
     ], {});
 
   },
